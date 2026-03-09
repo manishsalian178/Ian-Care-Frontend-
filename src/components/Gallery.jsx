@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, X, ZoomIn } from 'lucide-react';
+import { ArrowRight, X, ZoomIn, Play } from 'lucide-react';
 import axios from 'axios';
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -100,7 +100,10 @@ const Gallery = () => {
                                             <span className="text-[#FDB913] text-[8px] font-bold uppercase tracking-wider mb-0.5 block">
                                                 {item.category}
                                             </span>
-                                            <h3 className="text-white text-[10px] font-bold line-clamp-1">{item.title}</h3>
+                                            <h3 className="text-white text-[10px] font-bold line-clamp-1 flex items-center gap-1">
+                                                {item.videoUrl && <Play size={8} className="fill-current" />}
+                                                {item.title}
+                                            </h3>
                                         </div>
                                     </motion.div>
                                 ))}
@@ -139,8 +142,8 @@ const Gallery = () => {
                                                     </span>
                                                     <h3 className="text-white text-xl font-bold mb-3">{item.title}</h3>
                                                     <div className="flex items-center gap-2 text-white">
-                                                        <ZoomIn size={18} />
-                                                        <span className="text-sm">Click to view</span>
+                                                        {item.videoUrl ? <Play size={18} className="fill-current" /> : <ZoomIn size={18} />}
+                                                        <span className="text-sm">{item.videoUrl ? 'Click to play video' : 'Click to view'}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -153,7 +156,7 @@ const Gallery = () => {
                 </div>
             </section>
 
-            {/* Image Modal */}
+            {/* Image/Video Modal */}
             <AnimatePresence>
                 {selectedImage && (
                     <motion.div
@@ -179,16 +182,36 @@ const Gallery = () => {
                                 <X size={20} />
                             </button>
 
-                            {/* Image */}
-                            <div className="relative rounded-2xl overflow-hidden">
-                                <img
-                                    src={getImageUrl(selectedImage.image)}
-                                    alt={selectedImage.title}
-                                    className="w-full max-h-[80vh] object-contain"
-                                />
+                            {/* Media Content */}
+                            <div className="relative rounded-2xl overflow-hidden bg-black flex items-center justify-center min-h-[50vh]">
+                                {selectedImage.videoUrl ? (
+                                    selectedImage.videoUrl.includes('youtube') || selectedImage.videoUrl.includes('vimeo') || selectedImage.videoUrl.includes('embed') ? (
+                                        <iframe
+                                            src={selectedImage.videoUrl}
+                                            title={selectedImage.title}
+                                            className="w-full aspect-video"
+                                            frameBorder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                        ></iframe>
+                                    ) : (
+                                        <video
+                                            src={selectedImage.videoUrl.startsWith('http') ? selectedImage.videoUrl : `${API_BASE_URL}${selectedImage.videoUrl}`}
+                                            controls
+                                            autoPlay
+                                            className="w-full max-h-[80vh]"
+                                        ></video>
+                                    )
+                                ) : (
+                                    <img
+                                        src={getImageUrl(selectedImage.image)}
+                                        alt={selectedImage.title}
+                                        className="w-full max-h-[80vh] object-contain"
+                                    />
+                                )}
 
                                 {/* Info Overlay */}
-                                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-8">
+                                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-8 pointer-events-none">
                                     <span className="text-[#FDB913] text-sm font-bold uppercase tracking-wider mb-2 block">
                                         {selectedImage.category}
                                     </span>
