@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, X, Calendar, User, Tag, Play } from 'lucide-react';
+import { ArrowRight, X, Calendar, Tag, Play } from 'lucide-react';
 import axios from 'axios';
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -140,15 +140,9 @@ const Blog = () => {
                                             )}
                                         </div>
                                         <div className="lg:w-1/2 p-8 md:p-12 flex flex-col justify-center">
-                                            <div className="flex items-center gap-4 text-sm text-slate-500 mb-6">
-                                                <div className="flex items-center gap-1">
-                                                    <Calendar size={16} className="text-[#1A6B96]" />
-                                                    <span>{new Date(blogs[0].createdAt).toLocaleDateString()}</span>
-                                                </div>
-                                                <div className="flex items-center gap-1">
-                                                    <User size={16} className="text-[#1A6B96]" />
-                                                    <span>Staff</span>
-                                                </div>
+                                            <div className="flex items-center gap-1">
+                                                <Calendar size={16} className="text-[#1A6B96]" />
+                                                <span>{new Date(blogs[0].createdAt).toLocaleDateString()}</span>
                                             </div>
                                             <h3 className="text-2xl md:text-4xl font-bold text-[#1A6B96] mb-6 group-hover:text-[#FDB913] transition-colors leading-tight">
                                                 {blogs[0].title}
@@ -211,10 +205,6 @@ const Blog = () => {
                                                 <div className="flex items-center gap-1">
                                                     <Calendar size={14} />
                                                     <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
-                                                </div>
-                                                <div className="flex items-center gap-1">
-                                                    <User size={14} />
-                                                    <span>Staff</span>
                                                 </div>
                                             </div>
 
@@ -305,15 +295,9 @@ const Blog = () => {
                                 </div>
                                 <div className="absolute bottom-8 left-8 right-8 pointer-events-none">
                                     <h2 className="text-4xl font-bold text-white mb-4">{selectedBlog.title}</h2>
-                                    <div className="flex items-center gap-4 text-white/90">
-                                        <div className="flex items-center gap-2">
-                                            <Calendar size={16} />
-                                            <span>{new Date(selectedBlog.createdAt).toLocaleDateString()}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <User size={16} />
-                                            <span>Staff</span>
-                                        </div>
+                                    <div className="flex items-center gap-2">
+                                        <Calendar size={16} />
+                                        <span>{new Date(selectedBlog.createdAt).toLocaleDateString()}</span>
                                     </div>
                                 </div>
                             </div>
@@ -339,16 +323,7 @@ const Blog = () => {
                                 </div>
 
                                 <div className="mt-10 pt-8 border-t border-slate-200">
-                                    <div className="flex items-center justify-between flex-wrap gap-4">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 bg-[#1A6B96] rounded-full flex items-center justify-center text-white font-bold">
-                                                S
-                                            </div>
-                                            <div>
-                                                <p className="font-bold text-[#1A6B96]">Staff</p>
-                                                <p className="text-sm text-slate-500">Contributor</p>
-                                            </div>
-                                        </div>
+                                    <div className="flex items-center justify-end flex-wrap gap-4">
                                         <div className="flex items-center gap-2 text-slate-500">
                                             <Tag size={16} />
                                             <span className="text-sm">Updates</span>
