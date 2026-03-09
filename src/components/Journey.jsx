@@ -34,18 +34,51 @@ const Journey = () => {
 
     const getEmbedUrl = (url) => {
         if (!url) return '';
+
+        // YouTube
         if (url.includes('youtube.com/watch?v=')) {
-            return url.replace('watch?v=', 'embed/');
-        }
-        if (url.includes('youtu.be/')) {
-            const id = url.split('/').pop();
+            const id = new URL(url).searchParams.get('v');
             return `https://www.youtube.com/embed/${id}`;
         }
+        if (url.includes('youtu.be/')) {
+            const id = url.split('/').pop().split('?')[0];
+            return `https://www.youtube.com/embed/${id}`;
+        }
+        if (url.includes('youtube.com/embed/')) {
+            return url;
+        }
+
+        // Vimeo
         if (url.includes('vimeo.com/') && !url.includes('player.vimeo.com')) {
-            const id = url.split('/').pop();
+            const id = url.split('/').pop().split('?')[0];
             return `https://player.vimeo.com/video/${id}`;
         }
+
+        // Facebook
+        if (url.includes('facebook.com/') && (url.includes('/videos/') || url.includes('/watch/'))) {
+            return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=0&width=560`;
+        }
+
+        // Instagram
+        if (url.includes('instagram.com/p/') || url.includes('instagram.com/reels/') || url.includes('instagram.com/reel/')) {
+            const baseUrl = url.split('?')[0];
+            return `${baseUrl}${baseUrl.endsWith('/') ? '' : '/'}embed/`;
+        }
+
+        // TikTok
+        if (url.includes('tiktok.com/') && url.includes('/video/')) {
+            const id = url.split('/video/')[1].split('?')[0];
+            return `https://www.tiktok.com/embed/v2/${id}`;
+        }
+
         return url;
+    };
+
+    const isDirectVideoFile = (url) => {
+        if (!url) return false;
+        const cleanUrl = url.split('?')[0].toLowerCase();
+        const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.m4v'];
+        return videoExtensions.some(ext => cleanUrl.endsWith(ext)) || url.includes('/video/upload/');
     };
 
     return (
@@ -131,9 +164,16 @@ const Journey = () => {
                                                 </h3>
                                                 {story.videoUrl && (
                                                     <div className="absolute bottom-2 right-2">
-                                                        <div className="w-6 h-6 bg-white/90 rounded-full flex items-center justify-center text-[#1A6B96] shadow-lg">
+                                                        <a
+                                                            href={story.videoUrl}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            className="w-6 h-6 bg-white/90 rounded-full flex items-center justify-center text-[#1A6B96] shadow-lg"
+                                                            title="Watch Video"
+                                                        >
                                                             <Play size={12} fill="currentColor" className="ml-0.5" />
-                                                        </div>
+                                                        </a>
                                                     </div>
                                                 )}
                                             </div>
@@ -175,9 +215,16 @@ const Journey = () => {
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                                             {story.videoUrl && (
                                                 <div className="absolute bottom-4 right-4 z-10">
-                                                    <div className="w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-[#1A6B96] shadow-xl transform group-hover:scale-110 transition-all border border-white/20">
+                                                    <a
+                                                        href={story.videoUrl}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        className="w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-[#1A6B96] shadow-xl transform hover:scale-110 transition-all border border-white/20"
+                                                        title="Watch Video"
+                                                    >
                                                         <Play size={24} fill="currentColor" className="ml-1" />
-                                                    </div>
+                                                    </a>
                                                 </div>
                                             )}
                                             <div className="absolute bottom-4 left-4 right-4">
@@ -235,10 +282,15 @@ const Journey = () => {
                             {/* Image or Video */}
                             <div className="relative h-80 overflow-hidden rounded-t-3xl bg-slate-100">
                                 {selectedStory.videoUrl ? (
-                                    selectedStory.videoUrl.includes('youtube.com') ||
-                                        selectedStory.videoUrl.includes('youtu.be') ||
-                                        selectedStory.videoUrl.includes('vimeo.com') ||
-                                        selectedStory.videoUrl.includes('embed') ? (
+                                    isDirectVideoFile(selectedStory.videoUrl) ? (
+                                        <video
+                                            src={selectedStory.videoUrl.startsWith('http') ? selectedStory.videoUrl : `${API_BASE_URL}${selectedStory.videoUrl}`}
+                                            controls
+                                            className="w-full h-full object-contain bg-black"
+                                        >
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    ) : (
                                         <iframe
                                             src={getEmbedUrl(selectedStory.videoUrl)}
                                             title={selectedStory.name}
@@ -247,14 +299,6 @@ const Journey = () => {
                                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                             allowFullScreen
                                         ></iframe>
-                                    ) : (
-                                        <video
-                                            src={selectedStory.videoUrl.startsWith('http') ? selectedStory.videoUrl : `${API_BASE_URL}${selectedStory.videoUrl}`}
-                                            controls
-                                            className="w-full h-full object-contain bg-black"
-                                        >
-                                            Your browser does not support the video tag.
-                                        </video>
                                     )
                                 ) : (
                                     <img
