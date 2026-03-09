@@ -32,6 +32,22 @@ const Journey = () => {
         return path.startsWith('http') ? path : `${API_BASE_URL}${path}`;
     };
 
+    const getEmbedUrl = (url) => {
+        if (!url) return '';
+        if (url.includes('youtube.com/watch?v=')) {
+            return url.replace('watch?v=', 'embed/');
+        }
+        if (url.includes('youtu.be/')) {
+            const id = url.split('/').pop();
+            return `https://www.youtube.com/embed/${id}`;
+        }
+        if (url.includes('vimeo.com/') && !url.includes('player.vimeo.com')) {
+            const id = url.split('/').pop();
+            return `https://player.vimeo.com/video/${id}`;
+        }
+        return url;
+    };
+
     return (
         <div className="min-h-screen font-sans text-slate-800 bg-[#E8F6FD]">
             <Navbar />
@@ -212,9 +228,12 @@ const Journey = () => {
                             {/* Image or Video */}
                             <div className="relative h-80 overflow-hidden rounded-t-3xl bg-slate-100">
                                 {selectedStory.videoUrl ? (
-                                    selectedStory.videoUrl.includes('youtube.com') || selectedStory.videoUrl.includes('vimeo.com') || selectedStory.videoUrl.includes('embed') ? (
+                                    selectedStory.videoUrl.includes('youtube.com') ||
+                                        selectedStory.videoUrl.includes('youtu.be') ||
+                                        selectedStory.videoUrl.includes('vimeo.com') ||
+                                        selectedStory.videoUrl.includes('embed') ? (
                                         <iframe
-                                            src={selectedStory.videoUrl}
+                                            src={getEmbedUrl(selectedStory.videoUrl)}
                                             title={selectedStory.name}
                                             className="w-full h-full"
                                             frameBorder="0"

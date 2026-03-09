@@ -27,10 +27,25 @@ const Blog = () => {
         fetchBlogs();
     }, []);
 
-    // Helper to format image URL
     const getImageUrl = (path) => {
         if (!path) return '';
         return path.startsWith('http') ? path : `${API_BASE_URL}${path}`;
+    };
+
+    const getEmbedUrl = (url) => {
+        if (!url) return '';
+        if (url.includes('youtube.com/watch?v=')) {
+            return url.replace('watch?v=', 'embed/');
+        }
+        if (url.includes('youtu.be/')) {
+            const id = url.split('/').pop();
+            return `https://www.youtube.com/embed/${id}`;
+        }
+        if (url.includes('vimeo.com/') && !url.includes('player.vimeo.com')) {
+            const id = url.split('/').pop();
+            return `https://player.vimeo.com/video/${id}`;
+        }
+        return url;
     };
 
     return (
@@ -159,7 +174,7 @@ const Blog = () => {
                             <div className="grid grid-cols-2 gap-4 md:gap-8">
                                 {blogs.slice(1).map((blog, index) => (
                                     <motion.div
-                                        key={blog.id}
+                                        key={blog._id}
                                         initial={{ opacity: 0, y: 20 }}
                                         whileInView={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -254,9 +269,12 @@ const Blog = () => {
                             {/* Featured Image or Video */}
                             <div className="relative h-80 overflow-hidden rounded-t-3xl bg-slate-100">
                                 {selectedBlog.videoUrl ? (
-                                    selectedBlog.videoUrl.includes('youtube.com') || selectedBlog.videoUrl.includes('vimeo.com') || selectedBlog.videoUrl.includes('embed') ? (
+                                    selectedBlog.videoUrl.includes('youtube.com') ||
+                                        selectedBlog.videoUrl.includes('youtu.be') ||
+                                        selectedBlog.videoUrl.includes('vimeo.com') ||
+                                        selectedBlog.videoUrl.includes('embed') ? (
                                         <iframe
-                                            src={selectedBlog.videoUrl}
+                                            src={getEmbedUrl(selectedBlog.videoUrl)}
                                             title={selectedBlog.title}
                                             className="w-full h-full"
                                             frameBorder="0"
