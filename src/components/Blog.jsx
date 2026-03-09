@@ -237,17 +237,27 @@ const Blog = () => {
                                 <X size={20} />
                             </button>
 
-                            {/* Featured Media (Image or Video) */}
-                            <div className="relative h-80 overflow-hidden rounded-t-3xl bg-slate-900">
-                                {selectedBlog.video ? (
-                                    <video
-                                        src={selectedBlog.video}
-                                        controls
-                                        className="w-full h-full object-contain"
-                                        poster={getImageUrl(selectedBlog.image)}
-                                    >
-                                        Your browser does not support the video tag.
-                                    </video>
+                            {/* Featured Image or Video */}
+                            <div className="relative h-80 overflow-hidden rounded-t-3xl bg-slate-100">
+                                {selectedBlog.videoUrl ? (
+                                    selectedBlog.videoUrl.includes('youtube.com') || selectedBlog.videoUrl.includes('vimeo.com') || selectedBlog.videoUrl.includes('embed') ? (
+                                        <iframe
+                                            src={selectedBlog.videoUrl}
+                                            title={selectedBlog.title}
+                                            className="w-full h-full"
+                                            frameBorder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                        ></iframe>
+                                    ) : (
+                                        <video
+                                            src={selectedBlog.videoUrl.startsWith('http') ? selectedBlog.videoUrl : `${API_BASE_URL}${selectedBlog.videoUrl}`}
+                                            controls
+                                            className="w-full h-full object-contain bg-black"
+                                        >
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    )
                                 ) : (
                                     <img
                                         src={getImageUrl(selectedBlog.image)}

@@ -200,17 +200,27 @@ const Journey = () => {
                                 <X size={20} />
                             </button>
 
-                            {/* Featured Media (Image or Video) */}
-                            <div className="relative h-80 overflow-hidden rounded-t-3xl bg-slate-900">
-                                {selectedStory.video ? (
-                                    <video
-                                        src={selectedStory.video}
-                                        controls
-                                        className="w-full h-full object-contain"
-                                        poster={getImageUrl(selectedStory.image)}
-                                    >
-                                        Your browser does not support the video tag.
-                                    </video>
+                            {/* Image or Video */}
+                            <div className="relative h-80 overflow-hidden rounded-t-3xl bg-slate-100">
+                                {selectedStory.videoUrl ? (
+                                    selectedStory.videoUrl.includes('youtube.com') || selectedStory.videoUrl.includes('vimeo.com') || selectedStory.videoUrl.includes('embed') ? (
+                                        <iframe
+                                            src={selectedStory.videoUrl}
+                                            title={selectedStory.name}
+                                            className="w-full h-full"
+                                            frameBorder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                        ></iframe>
+                                    ) : (
+                                        <video
+                                            src={selectedStory.videoUrl.startsWith('http') ? selectedStory.videoUrl : `${API_BASE_URL}${selectedStory.videoUrl}`}
+                                            controls
+                                            className="w-full h-full object-contain bg-black"
+                                        >
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    )
                                 ) : (
                                     <img
                                         src={getImageUrl(selectedStory.image)}
